@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Quran Random Ayah',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.teal,
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Quran Random Ayah'),
     );
   }
 }
@@ -36,8 +36,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // double _opacity = 1;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,12 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          IconButton(
-              onPressed: () => setState(() {
-                    // _opacity = .5;
-                    // _opacity = 1;
-                  }),
-              icon: Icon(Icons.sync))
+          IconButton(onPressed: () => setState(() {}), icon: Icon(Icons.sync))
         ],
       ),
       body: Center(
@@ -58,12 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             IndopakTextWidget(),
-            // SizedBox(
-            //   width: 75,
-            //   child: Divider(
-            //     thickness: 2,
-            //   ),
-            // )
           ],
         ),
       ),

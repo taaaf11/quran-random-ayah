@@ -32,13 +32,12 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
           debugPrint(snapshot.error.toString());
         }
 
-        var animation = Tween<double>(
+        final animation = Tween<double>(
           begin: 0,
           end: 1,
         );
 
         return TweenAnimationBuilder(
-          // animation: animation,
           duration: const Duration(milliseconds: 300),
           tween: animation,
           child: Container(
@@ -47,7 +46,8 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
               borderRadius: BorderRadius.circular(12),
             ),
             constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width - 100),
+              maxWidth: MediaQuery.of(context).size.width - 100,
+            ),
             padding: const EdgeInsets.all(20),
             child: Center(
               child: Column(
@@ -55,19 +55,17 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                    child: Text(indopakAyah[randomVerseKey]!,
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.center,
-                        style:
-                            TextStyle(fontSize: 30, fontFamily: 'Indopak_WBW')
-                        // style: Theme.of(context)
-                        //     .textTheme
-                        //     .displaySmall
-                        //     ?.copyWith(fontFamily: 'Indopak_WBW', height: 1.3),
-                        ),
+                    child: Text(
+                      indopakAyah[randomVerseKey]!,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontFamily: 'Indopak_WBW',
+                        letterSpacing: -.1,
+                      ),
+                    ),
                   ),
-                  // AnimationController.unbounded(vsync: vsync),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 20),
@@ -103,9 +101,6 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
             ),
           ),
           builder: (context, value, child) {
-            if (value == 1) {
-              animation = Tween<double>(begin: 0, end: 1);
-            }
             return AnimatedOpacity(
               opacity: value,
               duration: const Duration(milliseconds: 60),
