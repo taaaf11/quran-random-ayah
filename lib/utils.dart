@@ -1,5 +1,7 @@
+// 🎯 Dart imports:
 import 'dart:math';
 
+// 🌎 Project imports:
 import 'package:quran_random_ayah/constants.dart';
 
 String getRandomVerseKey() {

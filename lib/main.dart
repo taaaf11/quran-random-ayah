@@ -1,6 +1,12 @@
+// 🐦 Flutter imports:
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
+
+// 📦 Package imports:
+import 'package:url_launcher/url_launcher_string.dart';
+
+// 🌎 Project imports:
 import 'package:quran_random_ayah/components/indopak_text.dart';
+import 'package:quran_random_ayah/utils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +42,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double _opacity = .5;
+  String _randomVerseKey = getRandomVerseKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,14 +52,61 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          IconButton(onPressed: () => setState(() {}), icon: Icon(Icons.sync))
+          IconButton(
+            onPressed: () => setState(
+              () {
+                _randomVerseKey = getRandomVerseKey();
+              },
+            ),
+            icon: Icon(Icons.sync),
+          )
         ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            IndopakTextWidget(),
+            IndopakTextWidget(
+              verseKey: _randomVerseKey,
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            MouseRegion(
+              onEnter: (value) {
+                setState(
+                  () {
+                    _opacity = 1;
+                  },
+                );
+              },
+              onExit: (event) {
+                setState(
+                  () {
+                    _opacity = .5;
+                  },
+                );
+              },
+              child: GestureDetector(
+                onTap: () async {
+                  await launchUrlString(
+                      'https://www.github.com/taaaf11/quran-random-ayah');
+                },
+                child: AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(milliseconds: 300),
+                  child: Text('',
+                      style: TextStyle(
+                        fontFamily: 'Symbols-NF',
+                      )),
+                ),
+              ),
+            )
           ],
         ),
       ),

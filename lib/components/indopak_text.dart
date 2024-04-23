@@ -1,14 +1,21 @@
+// 🐦 Flutter imports:
 import 'package:flutter/material.dart';
+
+// 📦 Package imports:
+import 'package:google_fonts/google_fonts.dart';
+
+// 🌎 Project imports:
 import 'package:quran_random_ayah/api.dart';
 import 'package:quran_random_ayah/constants.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:quran_random_ayah/utils.dart';
 
 class IndopakTextWidget extends StatefulWidget {
+  final String verseKey;
   final TextStyle? style;
 
   const IndopakTextWidget({
     super.key,
+    required this.verseKey,
     this.style,
   });
 
@@ -17,12 +24,14 @@ class IndopakTextWidget extends StatefulWidget {
 }
 
 class _IndopakTextWidgetState extends State<IndopakTextWidget> {
+  // String _oldVerseKey = widget.verseKey;
   @override
   Widget build(BuildContext context) {
-    String randomVerseKey = getRandomVerseKey();
+    String randomVerseKey = widget.verseKey;
 
     return FutureBuilder<String>(
-      key: UniqueKey(),
+      // key: UniqueKey(),
+      key: ValueKey(randomVerseKey),
       future: QuranApi.fetchTranslation(randomVerseKey),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (!snapshot.hasData) {

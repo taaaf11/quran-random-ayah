@@ -1,9 +1,11 @@
+// 🎯 Dart imports:
 import 'dart:convert';
 
+// 📦 Package imports:
 import 'package:http/http.dart' as http;
-// import 'package:quran_random_ayah/model/indopak_text_model.dart';
+
+// 🌎 Project imports:
 import 'package:quran_random_ayah/model/ayah_v1_text_model.dart';
-// import 'package:quran_random_ayah/model/quran_text_model.dart';
 import 'package:quran_random_ayah/types.dart';
 import 'package:quran_random_ayah/utils.dart';
 
