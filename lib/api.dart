@@ -1,6 +1,9 @@
 // 🎯 Dart imports:
 import 'dart:convert';
 
+// 🐦 Flutter imports:
+import 'package:flutter/services.dart';
+
 // 📦 Package imports:
 import 'package:http/http.dart' as http;
 
@@ -10,15 +13,15 @@ import 'package:quran_random_ayah/types.dart';
 import 'package:quran_random_ayah/utils.dart';
 
 class QuranApi {
-  static Future<Map<String, dynamic>> _fetchAyahData(
-      QuranTextType textType) async {
-    final String randomVerseKey = getRandomVerseKey();
+  static var v1PagesLoaded = [];
 
+  static Future<Map<String, dynamic>> _fetchAyahData(
+      QuranTextType textType, String verseKey) async {
     String urlString = switch (textType) {
       QuranTextType.indopak =>
-        'https://api.quran.com/api/v4/quran/verses/indopak?verse_key=$randomVerseKey',
+        'https://api.quran.com/api/v4/quran/verses/indopak?verse_key=$verseKey',
       QuranTextType.v1 =>
-        'https://api.quran.com/api/v4/quran/verses/indopak?code_v1=$randomVerseKey'
+        'https://api.quran.com/api/v4/quran/verses/code_v1?verse_key=$verseKey'
     };
 
     final uri = Uri.parse(urlString);
@@ -28,22 +31,35 @@ class QuranApi {
     return responseJson;
   }
 
-  // static Future<IndopakText> fetchIndopakRandom() async {
-  //   final ayahData = await _fetchAyahData(QuranTextType.indopak);
+  static Future<void> loadFont(int pageNumber) async {
+    if (v1PagesLoaded.contains(pageNumber)) {
+      return;
+    }
 
-  //   return IndopakText(
-  //     verseKey: ayahData['verses']![0]['verse_key'],
-  //     verseText: ayahData['verses']![0]['text_indopak'],
-  //   );
-  // }
+    var fontLoader = FontLoader(pageNumber.toString());
 
-  static Future<AyahV1> fetchV1AyahRandom() async {
-    final ayahData = await _fetchAyahData(QuranTextType.v1);
+    fontLoader.addFont(fetchFont(pageNumber));
+    v1PagesLoaded.add(pageNumber);
+
+    await fontLoader.load();
+  }
+
+  static Future<AyahV1> fetchV1Ayah(String randomVerseKey) async {
+    final data = await Future.wait([
+      _fetchAyahData(QuranTextType.v1, randomVerseKey),
+      fetchTranslation(randomVerseKey)
+    ]);
+
+    final ayahData = data[0] as Map<String, dynamic>;
+    final translation = data[1] as String;
+
+    await loadFont(ayahData['verses'][0]['v1_page']);
 
     return AyahV1(
       pageNumber: ayahData['verses'][0]['v1_page'],
       verseKey: ayahData['verses'][0]['verse_key'],
-      verseText: ayahData['verses'][0]['text_indopak'],
+      verseText: ayahData['verses'][0]['code_v1'],
+      translation: translation,
     );
   }
 

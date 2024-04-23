@@ -1,0 +1,121 @@
+// 🐦 Flutter imports:
+import 'package:flutter/material.dart';
+
+// 📦 Package imports:
+import 'package:google_fonts/google_fonts.dart';
+
+// 🌎 Project imports:
+import 'package:quran_random_ayah/api.dart';
+import 'package:quran_random_ayah/constants.dart';
+import 'package:quran_random_ayah/model/ayah_v1_text_model.dart';
+import 'package:quran_random_ayah/utils.dart';
+
+class V1TextWidget extends StatefulWidget {
+  final String verseKey;
+  final TextStyle? style;
+
+  const V1TextWidget({
+    super.key,
+    required this.verseKey,
+    this.style,
+  });
+
+  @override
+  State<V1TextWidget> createState() => _V1TextWidgetState();
+}
+
+class _V1TextWidgetState extends State<V1TextWidget> {
+  @override
+  Widget build(BuildContext context) {
+    String randomVerseKey = widget.verseKey;
+
+    return FutureBuilder<AyahV1>(
+      key: ValueKey(randomVerseKey),
+      future: QuranApi.fetchV1Ayah(randomVerseKey),
+      builder: (BuildContext context, AsyncSnapshot<AyahV1> snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+        if (snapshot.hasError) {
+          debugPrint(snapshot.error.toString());
+        }
+
+        final animation = Tween<double>(
+          begin: 0,
+          end: 1,
+        );
+
+        return TweenAnimationBuilder(
+          duration: const Duration(milliseconds: 300),
+          tween: animation,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).colorScheme.primary),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width - 100,
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                    child: Text(
+                      snapshot.data!.verseText,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontFamily: snapshot.data!.pageNumber.toString(),
+                        letterSpacing: -.1,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    child: Divider(
+                      indent: 20,
+                      endIndent: 20,
+                    ),
+                  ),
+                  Text(
+                    removeMarkupTags(snapshot.data!.translation),
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(fontSize: 17),
+                  ),
+                  const SizedBox(height: 18),
+                  Builder(builder: (context) {
+                    final List<String> verseKeySplit =
+                        randomVerseKey.split(':');
+                    int surahNumber = int.parse(verseKeySplit[0]);
+                    int ayahNumber = int.parse(verseKeySplit[1]);
+
+                    String surahName = surahData[surahNumber]![1];
+
+                    return Opacity(
+                      opacity: 0.7,
+                      child: Text(
+                        '$surahName . $ayahNumber',
+                        style: GoogleFonts.roboto(fontWeight: FontWeight.w700),
+                      ),
+                    );
+                  })
+                ],
+              ),
+            ),
+          ),
+          builder: (context, value, child) {
+            return AnimatedOpacity(
+              opacity: value,
+              duration: const Duration(milliseconds: 60),
+              child: child,
+            );
+          },
+        );
+      },
+    );
+  }
+}
