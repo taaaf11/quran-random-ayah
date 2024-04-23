@@ -68,16 +68,15 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
                       indopakAyah[randomVerseKey]!,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 35,
                         fontFamily: 'Indopak_WBW',
                         letterSpacing: -.1,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                     child: Divider(
                       indent: 20,
                       endIndent: 20,
@@ -88,7 +87,7 @@ class _IndopakTextWidgetState extends State<IndopakTextWidget> {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(fontSize: 17),
                   ),
-                  SizedBox(height: 18),
+                  const SizedBox(height: 18),
                   Builder(builder: (context) {
                     final List<String> verseKeySplit =
                         randomVerseKey.split(':');

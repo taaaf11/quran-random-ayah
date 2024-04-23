@@ -1,33 +1,55 @@
 // 🐦 Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:quran_random_ayah/components/v1_text.dart';
+import 'package:quran_random_ayah/notifiers/quran_text_type_notifier.dart';
+import 'package:quran_random_ayah/types.dart';
 
 // 📦 Package imports:
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:provider/provider.dart';
 
 // 🌎 Project imports:
 import 'package:quran_random_ayah/components/indopak_text.dart';
+import 'package:quran_random_ayah/pages/settings_page.dart';
+import 'shared_prefs_provider.dart';
 import 'package:quran_random_ayah/utils.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await SharedPreferencesProvider.initialize();
+
+  QuranTextType? quranTextTypePref = switch (
+      SharedPreferencesProvider.instance.getString('quran_text_type')) {
+    'indopak' => QuranTextType.indopak,
+    'v1' => QuranTextType.v1,
+    _ => null
+  };
+
+  runApp(MyApp(
+    quranTextType: quranTextTypePref ?? QuranTextType.indopak,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final QuranTextType quranTextType;
+
+  const MyApp({super.key, required this.quranTextType});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quran Random Ayah',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.dark,
+    return ChangeNotifierProvider(
+      create: (context) => QuranTextTypeNotifier(quranTextType),
+      child: MaterialApp(
+        title: 'Quran Random Ayah',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.teal,
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
+        home: const MyHomePage(title: 'Quran Random Ayah'),
       ),
-      home: const MyHomePage(title: 'Quran Random Ayah'),
     );
   }
 }
@@ -49,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
           IconButton(
@@ -58,7 +79,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 _randomVerseKey = getRandomVerseKey();
               },
             ),
-            icon: Icon(Icons.sync),
+            icon: const Icon(Icons.sync),
+          ),
+          PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                    child: TextButton(
+                  child: const Text('Settings'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsPage()),
+                    );
+                  },
+                ))
+              ];
+            },
           )
         ],
       ),
@@ -66,8 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            IndopakTextWidget(
-              verseKey: _randomVerseKey,
+            Consumer(
+              builder: (_, QuranTextTypeNotifier state, child) {
+                switch (state.quranTextType) {
+                  case QuranTextType.indopak:
+                    return IndopakTextWidget(verseKey: _randomVerseKey);
+                  case QuranTextType.v1:
+                    return V1TextWidget(verseKey: _randomVerseKey);
+                }
+              },
             ),
           ],
         ),
@@ -100,10 +144,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: AnimatedOpacity(
                   opacity: _opacity,
                   duration: const Duration(milliseconds: 300),
-                  child: Text('',
-                      style: TextStyle(
-                        fontFamily: 'Symbols-NF',
-                      )),
+                  child: const Text(
+                    '',
+                    style: TextStyle(
+                      fontFamily: 'Symbols-NF',
+                    ),
+                  ),
                 ),
               ),
             )
